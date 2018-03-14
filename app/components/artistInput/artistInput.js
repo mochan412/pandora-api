@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import styles from './artistInput.css';
 import PropTypes from 'prop-types';
 import Autocomplete from '../autocomplete/autocomplete.js';
-
-const api = "https://api.nextbigsound.com";
+import * as appConstants from '../../constants.js';
 
 class ArtistInput extends Component {
   constructor(props) {
@@ -20,26 +19,6 @@ class ArtistInput extends Component {
     this.inputChange = this.inputChange.bind(this);
     this.submitEvent = this.submitEvent.bind(this);
     this.searchArtist = this.searchArtist.bind(this);
-  }
-
-  inputChange(e) {
-    this.setState({
-      value: e.target.value
-    })
-
-    try {
-      this.searchArtist(e.target.value);
-    } catch(err) {}
-  }
-
-  submitEvent() {
-    if (this.state.value !== '') {
-      this.searchArtist(this.state.value);
-    } else {
-      this.setState({
-        errorMsg: 'please enter an artist\'s name'
-      })
-    }
   }
 
   render() {
@@ -59,7 +38,7 @@ class ArtistInput extends Component {
             placeholder="Enter an Artist's name"
             onChange={(e)=>this.inputChange(e)} />
             {error}
-          <Autocomplete data={this.state.autocomplete} />
+          <Autocomplete data={this.state.autocomplete} submitArtist={this.props.submitArtist} />
         </div>
         <div className={styles.buttonBox}>
           <button onClick={this.submitEvent} type="submit">submit</button>
@@ -70,7 +49,7 @@ class ArtistInput extends Component {
 
   searchArtist(val) {
     let artistName = val.split(' ').join('+');
-    let url = api + "/search/v1/artists/?query=" + artistName + "&limit=10";
+    let url = appConstants.apiURL + "/search/v1/artists/?query=" + artistName + "&limit=10";
 
     fetch(url).then(results => {
       return results.json();
@@ -81,6 +60,30 @@ class ArtistInput extends Component {
       })
     })
   }
+
+  inputChange(e) {
+    this.setState({
+      value: e.target.value
+    })
+
+    try {
+      this.searchArtist(e.target.value);
+    } catch(err) {}
+  }
+
+  submitEvent() {
+    if (this.state.value !== '') {
+      this.props.submitArtist(this.state.value);
+    } else {
+      this.setState({
+        errorMsg: 'please enter an artist\'s name'
+      })
+    }
+  }
+}
+
+ArtistInput.propTypes = {
+  submitArtist: PropTypes.func.isRequired
 }
 
 export default ArtistInput;

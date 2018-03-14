@@ -29,8 +29,9 @@ class Autocomplete extends Component {
 
     let acChildren = null;
     if (this.state.artists.length > 0) {
-      let children = this.state.artists.map(item => {
-        return <li onClick={this.selectChild}>{item.name}</li>
+      let children = this.state.artists.map((item, index) => {
+
+        return (<li onClick={() => this.selectChild(item.id)} key={index}>{item.name}</li>)
       })
 
       acChildren = <ul className={styles.acList}>{children}</ul>
@@ -43,9 +44,16 @@ class Autocomplete extends Component {
     );
   }
 
-  selectChild() {
-
+  // TODO: enable keyboard events
+  selectChild(id) {
+    try {
+      this.props.submitArtist(id);
+    } catch(err) {}
   }
+}
+
+Autocomplete.propTypes = {
+  submitArtist: PropTypes.func.isRequired
 }
 
 export default Autocomplete;
