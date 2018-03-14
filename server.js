@@ -1,24 +1,55 @@
-let   express     = require('express'),
-      app         = express(),
-      bodyParser  = require('body-parser'),
-      fetch       = require('node-fetch'),
-      router      = express.Router();
+/* eslint no-console: 0 */
+
+const path = require('path');
+const express = require('express');
+const webpack = require('webpack');
+const webpackMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+const config = require('./webpack.config.js');
+const fetch = require('node-fetch')
+
+const isDeveloping = process.env.NODE_ENV !== 'production';
+const port = isDeveloping ? 3000 : process.env.PORT;
+const app = express();
 
 const token         = '8c089170d31ea3b11f1ea65dbfc8ea46';
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+if (isDeveloping) {
+  const compiler = webpack(config);
+  const middleware = webpackMiddleware(compiler, {
+    publicPath: config.output.publicPath,
+    contentBase: 'src',
+    stats: {
+      colors: true,
+      hash: false,
+      timings: true,
+      chunks: false,
+      chunkModules: false,
+      modules: false
+    }
+  });
 
-let port = process.env.PORT || 8080;
+  app.use(middleware);
+  app.use(webpackHotMiddleware(compiler));
+  app.get('/app', function response(req, res) {
+    res.write(middleware.fileSystem.readFileSync(path.join(__dirname, 'dist/index.html')));
+    res.end();
+  });
+} else {
+  app.use(express.static(__dirname + '/dist'));
+  app.get('/app', function response(req, res) {
+    res.sendFile(path.join(__dirname, 'dist/index.html'));
+  });
+}
 
-router.get('/events/:ARTIST_ID/stats', (req, res) => {
+app.get('/events/:ARTIST_ID/stats', (req, res) => {
     let artist_id   = req.params.ARTIST_ID;
     let start_date  = getEpochDay(req.query.startDate);
     let end_date    = getEpochDay(req.query.endDate);
 
     let url = "https://api.nextbigsound.com/events/v1/entity/"+artist_id+"?start="+start_date+"&end="+end_date+"&access_token="+token;
 
-    fetch(url).then(response => {
+    fetch(url).then( response => {
       response.json().then(json => {
 
         let formattedResponse = formatResponse(json);
@@ -28,21 +59,17 @@ router.get('/events/:ARTIST_ID/stats', (req, res) => {
         })
       });
     })
-    .catch(error => {
+    .catch( error => {
       console.log('ERROR: ' + error);
     });
-
 });
 
-router.get('/home', (req, res) => {
-  res.send('static')
+app.listen(port, '0.0.0.0', function onStart(err) {
+  if (err) {
+    console.log(err);
+  }
+  console.info('==> 🌎 Listening on port %s. Open up http://0.0.0.0:%s/ in your browser.', port, port);
 });
-
-app.use('/', router);
-
-app.listen(port);
-console.log('API server started on port ' + port);
-
 
 /******** helper functions **********/
 //date formatting - get epoch time by day
