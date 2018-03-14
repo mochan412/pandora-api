@@ -1,27 +1,27 @@
-var   express     = require('express'),
+let   express     = require('express'),
       app         = express(),
       bodyParser  = require('body-parser'),
       fetch       = require('node-fetch'),
       router      = express.Router();
 
-var token         = '8c089170d31ea3b11f1ea65dbfc8ea46';
+const token         = '8c089170d31ea3b11f1ea65dbfc8ea46';
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || 8080;
+let port = process.env.PORT || 8080;
 
-router.get('/events/:ARTIST_ID/stats', function(req, res) {
-    var artist_id   = req.params.ARTIST_ID;
-    var start_date  = getEpochDay(req.query.startDate);
-    var end_date    = getEpochDay(req.query.endDate);
+router.get('/events/:ARTIST_ID/stats', (req, res) => {
+    let artist_id   = req.params.ARTIST_ID;
+    let start_date  = getEpochDay(req.query.startDate);
+    let end_date    = getEpochDay(req.query.endDate);
 
-    var url = "https://api.nextbigsound.com/events/v1/entity/"+artist_id+"?start="+start_date+"&end="+end_date+"&access_token="+token;
+    let url = "https://api.nextbigsound.com/events/v1/entity/"+artist_id+"?start="+start_date+"&end="+end_date+"&access_token="+token;
 
     fetch(url).then(response => {
       response.json().then(json => {
 
-        formattedResponse = formatResponse(json);
+        let formattedResponse = formatResponse(json);
 
         res.json({
           counts: formattedResponse
@@ -34,38 +34,42 @@ router.get('/events/:ARTIST_ID/stats', function(req, res) {
 
 });
 
+router.get('/home', (req, res) => {
+  res.send('static')
+});
+
 app.use('/', router);
 
 app.listen(port);
-console.log('server started on port ' + port);
+console.log('API server started on port ' + port);
 
 
 /******** helper functions **********/
 //date formatting - get epoch time by day
-function getEpochDay(date) {
-  var dateArray =  date.split('-');
-  var ms = Date.UTC(dateArray[0], dateArray[1]-1, dateArray[2]);
-  var newDate = Math.round(ms / 8.64e7);
+let getEpochDay = date => {
+  let dateArray =  date.split('-');
+  let ms = Date.UTC(dateArray[0], dateArray[1]-1, dateArray[2]);
+  let newDate = Math.round(ms / 8.64e7);
 
   return newDate;
 }
 
 //format date - get ISO week
-function getIsoWeek(days) {
+let getIsoWeek = days => {
   //convert epoch time to milliseconds
-  var ms = (days * 86400000)+ 8.64e+7;
+  let ms = (days * 86400000)+ 8.64e+7;
 
-  var d = new Date(ms);
+  let d = new Date(ms);
 
   // Set to nearest Thursday per ISO week definition
   d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-  var startDate = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-  var weekNo = Math.ceil(( ( (d - startDate) / 86400000) + 1)/7);
+  let startDate = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  let weekNo = Math.ceil(( ( (d - startDate) / 86400000) + 1)/7);
 
-  var year = d.getUTCFullYear();
+  let year = d.getUTCFullYear();
 
   // pad single digits
-  function addPadding(num) {
+  let addPadding = num => {
     return (num < 10 ? '0' : '') + num;
   }
 
@@ -73,8 +77,8 @@ function getIsoWeek(days) {
 }
 
 //find in array
-function containsItem(item, arr) {
-  for (var i = 0; i < arr.length; i++) {
+let containsItem = (item, arr) => {
+  for (let i = 0; i < arr.length; i++) {
     if (arr[i] === item) {
       return true;
     }
@@ -84,29 +88,29 @@ function containsItem(item, arr) {
 }
 
 //returns events object as key/object pairs
-function returnEvents(obj) {
-  var events = {};
-  for (var ev in obj) {
-    var num = obj[ev].events.length;
+let returnEvents = obj => {
+  let events = {};
+  for (let ev in obj) {
+    let num = obj[ev].events.length;
     events[ev] = num
   }
   return events;
 }
 
 //iterates over API response and returns formatted object
-function formatResponse(data) {
-  var values = [],
+let formatResponse = data => {
+  let values = [],
       result = {};
 
-  for (var item in data) {
-    var wk = getIsoWeek(item);
-    var eventObj = data[item].event_types;
+  for (let item in data) {
+    let wk = getIsoWeek(item);
+    let eventObj = data[item].event_types;
 
     if (containsItem(wk, values)) {
       // if it's in a week that's already been counted, add to results object
-      var newEvents = returnEvents(eventObj);
+      let newEvents = returnEvents(eventObj);
 
-      for (var key in newEvents) {
+      for (let key in newEvents) {
         if (result[wk][key]) {
           result[wk][key] = result[wk][key] + newEvents[key];
         } else {
