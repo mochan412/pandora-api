@@ -1,16 +1,16 @@
 {
   "name": "pandora-api",
   "version": "1.0.0",
-  "description": "pandora data viz challenge",
+  "description": "pandora code challenge",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "npm test"
   },
   "dependencies": {
     "body-parser": "~1.0.1",
     "express": "~4.0.0",
-    "moment": "^2.21.0",
-    "request": "^2.85.0"
+    "node-fetch": "~2.1.1"
   },
   "author": "mo madono",
   "license": "ISC"

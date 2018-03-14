@@ -1,12 +1,10 @@
 var   express     = require('express'),
       app         = express(),
       bodyParser  = require('body-parser'),
-      request     = require('request'),
+      fetch       = require('node-fetch'),
       router      = express.Router();
 
 var token         = '8c089170d31ea3b11f1ea65dbfc8ea46';
-// https://api.nextbigsound.com/search/v1/artists/?query=<NAME>&limit=<LIMIT>
-// https://api.nextbigsound.com/events/v1/entity/<ARTIST_ID>?start=<START_DAY>&end=<END_DAY>&access_token=<ACCESS_TOKEN>
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -20,25 +18,19 @@ router.get('/events/:ARTIST_ID/stats', function(req, res) {
 
     var url = "https://api.nextbigsound.com/events/v1/entity/"+artist_id+"?start="+start_date+"&end="+end_date+"&access_token="+token;
 
-    var content = [];
-    request.get(url)
-      .on('response', (response)=>{
-        console.log('response statusCode:', response && response.statusCode);
-      })
-      .on('data', (chunk)=>{
-        content.push(chunk);
-      })
-      .on('end', ()=>{
-        content = JSON.parse(Buffer.concat(content).toString());
-        formattedResponse = formatResponse(content);
+    fetch(url).then(response => {
+      response.json().then(json => {
+
+        formattedResponse = formatResponse(json);
 
         res.json({
           counts: formattedResponse
-        });
-      })
-      .on('error', (error)=>{
-        console.log('ERROR: ' + error)
-      })
+        })
+      });
+    })
+    .catch(error => {
+      console.log('ERROR: ' + error);
+    });
 
 });
 
@@ -122,7 +114,6 @@ function formatResponse(data) {
         }
       }
     } else {
-
       // if it's a new week, add it to values array
       values.push(wk);
 
@@ -131,5 +122,5 @@ function formatResponse(data) {
     }
   }
 
-  return result
+  return result;
 }
