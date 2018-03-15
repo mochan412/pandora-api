@@ -38,10 +38,7 @@ class ArtistInput extends Component {
             placeholder="Enter an Artist's name"
             onChange={(e)=>this.inputChange(e)} />
             {error}
-          <Autocomplete data={this.state.autocomplete} submitArtist={this.props.submitArtist} />
-        </div>
-        <div className={styles.buttonBox}>
-          <button onClick={this.submitEvent} type="submit">submit</button>
+          <Autocomplete data={this.state.autocomplete} submitArtist={this.submitEvent} />
         </div>
       </div>
     );
@@ -71,14 +68,11 @@ class ArtistInput extends Component {
     } catch(err) {}
   }
 
-  submitEvent() {
-    if (this.state.value !== '') {
-      this.props.submitArtist(this.state.value);
-    } else {
-      this.setState({
-        errorMsg: 'please enter an artist\'s name'
-      })
-    }
+  submitEvent(id, name) {
+    this.setState({
+      value: name
+    })
+    this.props.submitArtist(id);
   }
 }
 

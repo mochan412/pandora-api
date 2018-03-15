@@ -3,8 +3,6 @@ import styles from './autocomplete.css';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
-const api = "https://api.nextbigsound.com";
-
 class Autocomplete extends Component {
   constructor(props) {
     super(props);
@@ -31,7 +29,7 @@ class Autocomplete extends Component {
     if (this.state.artists.length > 0) {
       let children = this.state.artists.map((item, index) => {
 
-        return (<li onClick={() => this.selectChild(item.id)} key={index}>{item.name}</li>)
+        return (<li onClick={() => this.selectChild(item.id, item.name)} key={index}>{item.name}</li>)
       })
 
       acChildren = <ul className={styles.acList}>{children}</ul>
@@ -45,9 +43,13 @@ class Autocomplete extends Component {
   }
 
   // TODO: enable keyboard events
-  selectChild(id) {
+  selectChild(id, name) {
+    this.setState({
+      artists: []
+    });
+
     try {
-      this.props.submitArtist(id);
+      this.props.submitArtist(id, name);
     } catch(err) {}
   }
 }

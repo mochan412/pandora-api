@@ -22,21 +22,25 @@ export default class App extends React.Component {
       <div className={styles.app}>
         <ArtistInput submitArtist={this.submitArtist}/>
 
-        <ArtistChart  data={[5,10,1,3]} size={[500,500]}/>
+        <ArtistChart  data={this.state.data} size={[700,500]}/>
       </div>
     );
   }
 
   submitArtist(val) {
-    let url = appConstants.apiURL + "/artists/" + val + "/data?metricIds=31,37&&startDate=2017-01-01&endDate=2017-12-31&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
+    // let url = "/events/" + val + "/stats?startDate=2017-01-01&endDate=2017-12-31&accessToken=" + appConstants.accessToken;
+    let url = appConstants.apiURL + "/artists/" + val + "/data?metricIds=28,247,415,414&startDate=2017-01-01&endDate=2017-12-3&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
 
+    // console.log(val)
     fetch(url).then(results => {
       return results.json();
     })
     .then(data => {
+      console.log(data)
       this.setState({
         data: data
       })
+
     })
   }
 }
