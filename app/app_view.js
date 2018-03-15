@@ -29,14 +29,13 @@ export default class App extends React.Component {
 
   submitArtist(val) {
     // let url = "/events/" + val + "/stats?startDate=2017-01-01&endDate=2017-12-31&accessToken=" + appConstants.accessToken;
-    let url = appConstants.apiURL + "/artists/" + val + "/data?metricIds=28,247,415,414&startDate=2017-01-01&endDate=2017-12-3&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
+    let url = appConstants.apiURL + "/artists/" + val + "/data?metricIds=28,29,247,415,414,11&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
 
-    // console.log(val)
     fetch(url).then(results => {
       return results.json();
     })
     .then(data => {
-      console.log(data)
+
       this.setState({
         data: data
       })

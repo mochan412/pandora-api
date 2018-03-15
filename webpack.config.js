@@ -43,5 +43,10 @@ module.exports = {
       test: /\.css$/,
       loader: 'style!css?modules&localIdentName=[name]---[local]---[hash:base64:5]'
     }]
-  }
+  },
+  resolve: {
+      alias: {
+          d3: 'd3/build/d3.js'
+      }
+  },
 };
