@@ -22,7 +22,7 @@ export default class App extends React.Component {
       <div className={styles.app}>
         <ArtistInput submitArtist={this.submitArtist}/>
 
-        <ArtistChart  data={this.state.data} size={[700,500]}/>
+        <ArtistChart  data={this.state.data} size={[900,500]}/>
       </div>
     );
   }

@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import * as appConstants from '../../constants.js';
 import * as d3 from 'd3';
 
+const JSON = {"counts":{"2017-W01":{"16":7},"2017-W02":{"16":10},"2017-W03":{"16":13},"2017-W04":{"16":12},"2017-W05":{"16":12},"2017-W06":{"8":8,"15":2,"16":140},"2017-W07":{"15":3,"16":54},"2017-W08":{"15":4,"16":63},"2017-W09":{"16":39},"2017-W10":{"16":35},"2017-W11":{"8":1,"16":17},"2017-W12":{"8":4,"16":29},"2017-W13":{"16":38},"2017-W14":{"15":4,"16":37},"2017-W15":{"8":2,"16":58},"2017-W16":{"16":35},"2017-W17":{"8":1,"15":2,"16":149},"2017-W18":{"16":42},"2017-W19":{"15":3,"16":131},"2017-W20":{"8":4,"15":4,"16":105},"2017-W21":{"10":1,"15":6,"16":72},"2017-W22":{"15":1,"16":36},"2017-W23":{"8":10,"10":1,"15":38,"16":146},"2017-W24":{"8":1,"15":26,"16":198},"2017-W25":{"10":1,"15":1,"16":8},"2017-W26":{"8":2,"15":3,"16":42},"2017-W27":{"15":2,"16":8},"2017-W28":{"15":3,"16":14},"2017-W29":{"16":29},"2017-W30":{"16":27},"2017-W31":{"16":22},"2017-W32":{"16":15},"2017-W33":{"16":19},"2017-W34":{"8":1,"15":5,"16":38},"2017-W35":{"15":1,"16":22},"2017-W36":{"10":2,"16":15},"2017-W37":{"10":1,"15":3,"16":27},"2017-W38":{"10":3,"16":49},"2017-W39":{"8":1,"10":4,"15":1,"16":15},"2017-W40":{"10":2,"16":17},"2017-W41":{"10":4,"16":17},"2017-W42":{"10":2,"15":2,"16":14},"2017-W43":{"10":4,"16":15},"2017-W44":{"10":2,"16":16},"2017-W45":{"10":3,"15":1,"16":10},"2017-W46":{"10":1,"16":18},"2017-W47":{"10":1,"16":16},"2017-W48":{"10":5,"16":23},"2017-W49":{"10":4,"16":11},"2017-W50":{"10":3,"16":23},"2017-W51":{"10":2,"14":4,"15":2,"16":46},"2017-W52":{"16":3}}}
+
+
 class ArtistChart extends Component {
   constructor(props) {
     super(props);
@@ -44,11 +47,26 @@ class ArtistChart extends Component {
     const startDate = appConstants.startDate.split('-');
     const endDate = appConstants.endDate.split('-');
 
+    let parseTime = d3.timeParse("%y-%d-%m");
+
     let returnDelta = (deltas) => {
       let deltasArray = [];
       for (let d in deltas) {
         let newObj = {};
         newObj[d] = deltas[d]
+        deltasArray.push(newObj)
+      }
+      return deltasArray;
+    }
+
+    let returnDeltas = (deltas) => {
+      let deltasArray = [];
+      for (let d in deltas) {
+        let newDateArr = d.split('-');
+        let newDate = new Date(newDateArr[0], newDateArr[1]-1, newDateArr[2] )
+        let newObj = {};
+        newObj['x'] = newDate;
+        newObj['y'] = deltas[d]
         deltasArray.push(newObj)
       }
       return deltasArray;
@@ -67,38 +85,33 @@ class ArtistChart extends Component {
       return {
         metricId: item.metricId,
         values: returnDelta(item.timeseries.deltas)
-        // values: item.timeseries.deltas
       }
     })
 
-    console.log(formattedData)
+    let data2 = data.data.map(item => {
+      return {
+        metricId: item.metricId,
+        values: returnDeltas(item.timeseries.deltas)
+      }
+    })
 
     let returnDate = arr => {
       let newArr = arr.map(item=>{
         for (let i in item) {
           let dateArr = i.split('-');
           return new Date(dateArr[0],dateArr[1]-1,dateArr[2]);
-          // return i
         }
       })
       return newArr
     }
-    //
-    // let minDate = new Date(startDate[0],startDate[1]-1,startDate[2]),
-    //     maxDate = new Date(endDate[0],endDate[1]-1,endDate[2]);
-    //
 
-
-    // let x = d3.scaleTime().domain([minDate, maxDate])
-    //     .range([padding, width - padding * 2]);
-
-    let axisX = d3.scaleTime().domain([
+    let scaleX = d3.scaleTime().domain([
           d3.min(formattedData, d => { return d3.min(returnDate(d.values)) }),
           d3.max(formattedData, d => { return d3.max(returnDate(d.values)) })
         ])
         .range([padding, width - padding * 2]);
 
-    let axisY = d3.scaleLinear().domain([
+    let scaleY = d3.scaleLinear().domain([
           d3.min(formattedData, d => { return d3.min(returnKeys(d.values)) }),
           d3.max(formattedData, d => { return d3.max(returnKeys(d.values)) })
         ])
@@ -108,8 +121,8 @@ class ArtistChart extends Component {
     let color = d3.scaleOrdinal(d3.schemeCategory10)
         .domain(d3.keys(formattedData[0]).filter(function(key) { return key === "metricId"; }));
 
-    let xAxis = d3.axisBottom(axisX);
-    let yAxis = d3.axisLeft(axisY).ticks(10);
+    let xAxis = d3.axisBottom(scaleX);
+    let yAxis = d3.axisLeft(scaleY).ticks(10);
 
     svg.append("g")
         .attr("class", "xAxis")
@@ -126,60 +139,28 @@ class ArtistChart extends Component {
           return "translate(" + this.getBBox().height*-2 + "," + this.getBBox().height + ")rotate(-45)";
         });
 
-      // var data = [
-//     {name: 'John', values: [0,1,3,9, 8, 7]},
-//     {name: 'Harry', values: [0, 10, 7, 1, 1, 11]},
-//     {name: 'Steve', values: [3, 1, 4, 4, 4, 17]},
-//     {name: 'Adam', values: [4, 77, 2, 13, 11, 13]}
-// ];
-      let x = d3.scaleTime()
-          // .domain([
-            // d3.min(data, d => { return d3.min(returnDate(d.values)) }),
-            // d3.max(data, d => { return d3.max(returnDate(d.values)) })
-          // ])
-          .range([padding, width - padding * 2]);
+    let lines = svg.selectAll(".lines")
+        .data(data2)
+        .enter().append("g")
+        .attr("class", "lines");
 
-      let y = d3.scaleLinear()
-          // .domain([
-          //   d3.min(data, d => { return d3.min(returnKeys(d.values)) }),
-          //   d3.max(data, d => { return d3.max(returnKeys(d.values)) })
-          // ])
-          .range([height, 0]);
+    let lineFunction = d3.line()
+      .x(function(d) { return scaleX(d.x); })
+      .y(function(d) { return scaleY(d.y); });
 
-      let line = d3.line()
-          .x(function(d, i) {
-            let val = 0;
-            for (let i in d) {
-              val = d[i]
-            };
-            return x(val); })
-          .y(function(d, i) {
-            // let val = null;
-            // for (let i in d) {
-            //   let dateArr = i.split('-');
-            //   val = new Date(dateArr[0],dateArr[1]-1,dateArr[2]);
-            // };
-            console.log(d, i)
-            return y(i); })
-          .curve(d3.curveBasis)
-
-      var people = svg.selectAll(".people")
-          .data(formattedData)
-          .enter().append("g")
-          .attr("class", "people");
-
-      people.append("path")
-          .attr("class", "line")
-          .attr("d", d => { return line(d.values); })
-          .style("stroke", function(d) { return color(d.metricId); });
+    lines.append("path")
+        .attr("class", "line")
+        .attr("d", d => { return lineFunction(d.values)})
+        .style("stroke", function(d) { return color(d.metricId); })
+        .style("fill", "none");
 
 
-      // people.append("text")
-      //     .datum(function(d) { return {name: d.name, length: d.values.length-1, value: d.values[d.values.length - 1]}; })
-      //     .attr("transform", function(d, i) { return "translate(" + x(d.length) + "," + y(d.value) + ")"; })
-      //     .attr("x", 3)
-      //     .attr("dy", ".35em")
-      //     .text(function(d) { return d.name; });
+      lines.append("text")
+          .datum(function(d) { return {name: d.name, length: d.values.length-1, value: d.values[d.values.length - 1]}; })
+          .attr("transform", function(d, i) { return "translate(" + x(d.length) + "," + y(d.value) + ")"; })
+          .attr("x", 3)
+          .attr("dy", ".35em")
+          .text(function(d) { return d.name; });
   }
 
   createLine(data) {
