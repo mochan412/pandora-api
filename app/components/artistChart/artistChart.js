@@ -157,8 +157,6 @@ class ArtistChart extends Component {
           return "translate(" + this.getBBox().height*-2 + "," + this.getBBox().height + ")rotate(-45)";
         });
 
-    svg.selectAll(".yAxis text")
-
     let lines = svg.selectAll(".lines")
         .data(data2)
         .enter().append("g")
@@ -185,6 +183,7 @@ class ArtistChart extends Component {
     const svg = d3.select(this.node);
     svg.selectAll("*").remove();
 
+    //TODO: add loading state
     this.setState({
       loading: true
     })
