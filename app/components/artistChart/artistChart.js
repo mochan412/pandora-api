@@ -58,6 +58,10 @@ class ArtistChart extends Component {
     )
   }
 
+  /**
+   * create key
+   * @arr {Array} list of objects for key
+   */
   createIndex(arr) {
     let keyItems = arr.map((item, i)=>{
         return <ChartKey hex={item.hex} key={i} code={item.id} />
@@ -74,6 +78,10 @@ class ArtistChart extends Component {
     })
   }
 
+  /**
+   * d3 function to create chart
+   * @data {Object} api response
+   */
   createChart(data) {
 
     const svg = d3.select(this.node);
@@ -179,6 +187,9 @@ class ArtistChart extends Component {
     this.createIndex(index);
   }
 
+  /**
+   * loading event unsets the chart
+   */
   initLoad() {
     const svg = d3.select(this.node);
     svg.selectAll("*").remove();

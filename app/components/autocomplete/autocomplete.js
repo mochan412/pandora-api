@@ -43,6 +43,11 @@ class Autocomplete extends Component {
   }
 
   // TODO: enable keyboard events
+  /**
+   * clear AC while sending request up the app
+   * @id {Number} artist id
+   * @name {String} artist name
+   */
   selectChild(id, name) {
     this.setState({
       artists: []

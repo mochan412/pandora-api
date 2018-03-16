@@ -33,6 +33,10 @@ export default class App extends React.Component {
     );
   }
 
+/**
+ * API request for different metrics
+ * @metrics {Array} array of numbers
+ */
  changeMetrics(metrics) {
    let metricsString = metrics.join(',')
    let url = appConstants.apiURL + "/artists/" + this.state.activeArtist + "/data?metricIds="+metricsString+"&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
@@ -46,6 +50,10 @@ export default class App extends React.Component {
    })
  }
 
+ /**
+  * API request for different artists
+  * @val {Number} artist ID
+  */
   submitArtist(val) {
     let url = appConstants.apiURL + "/artists/" + val + "/data?metricIds=11,31,40,254&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
 

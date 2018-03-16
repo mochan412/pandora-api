@@ -8,39 +8,32 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 const config = require('./webpack.config.js');
 const fetch = require('node-fetch')
 
-const isDeveloping = process.env.NODE_ENV !== 'production';
-const port = isDeveloping ? 3000 : process.env.PORT;
+const port = 3000;
 const app = express();
 
 const token         = '8c089170d31ea3b11f1ea65dbfc8ea46';
 
-if (isDeveloping) {
-  const compiler = webpack(config);
-  const middleware = webpackMiddleware(compiler, {
-    publicPath: config.output.publicPath,
-    contentBase: 'src',
-    stats: {
-      colors: true,
-      hash: false,
-      timings: true,
-      chunks: false,
-      chunkModules: false,
-      modules: false
-    }
-  });
 
-  app.use(middleware);
-  app.use(webpackHotMiddleware(compiler));
-  app.get('/app', function response(req, res) {
-    res.write(middleware.fileSystem.readFileSync(path.join(__dirname, 'dist/index.html')));
-    res.end();
-  });
-} else {
-  app.use(express.static(__dirname + '/dist'));
-  app.get('/app', function response(req, res) {
-    res.sendFile(path.join(__dirname, 'dist/index.html'));
-  });
-}
+const compiler = webpack(config);
+const middleware = webpackMiddleware(compiler, {
+  publicPath: config.output.publicPath,
+  contentBase: 'src',
+  stats: {
+    colors: true,
+    hash: false,
+    timings: true,
+    chunks: false,
+    chunkModules: false,
+    modules: false
+  }
+});
+
+app.use(middleware);
+app.use(webpackHotMiddleware(compiler));
+app.get('/app', function response(req, res) {
+  res.write(middleware.fileSystem.readFileSync(path.join(__dirname, 'dist/index.html')));
+  res.end();
+});
 
 app.get('/events/:ARTIST_ID/stats', (req, res) => {
     let artist_id   = req.params.ARTIST_ID;
@@ -72,7 +65,10 @@ app.listen(port, '0.0.0.0', function onStart(err) {
 });
 
 /******** helper functions **********/
-//date formatting - get epoch time by day
+/**
+ * date formatting - get epoch time by days
+ * @date {String} format: yyyy-mm-dd
+ */
 let getEpochDay = date => {
   let dateArray =  date.split('-');
   let ms = Date.UTC(dateArray[0], dateArray[1]-1, dateArray[2]);
@@ -81,7 +77,10 @@ let getEpochDay = date => {
   return newDate;
 }
 
-//format date - get ISO week
+/**
+ * format date - get ISO week
+ * @days {Number} epoch time
+ */
 let getIsoWeek = days => {
   //convert epoch time to milliseconds
   let ms = (days * 86400000)+ 8.64e+7;
@@ -103,10 +102,14 @@ let getIsoWeek = days => {
   return (d.getUTCFullYear() + '-W' +  addPadding(weekNo))
 }
 
-//find in array
+/**
+ * find in array
+ * @item {Number, String} number of string (anything that can be validated by === operator)
+ * @arr {Array} arry to be traversed
+ */
 let containsItem = (item, arr) => {
   for (let i = 0; i < arr.length; i++) {
-    if (arr[i] === item) {
+    if (arr[i] == item) {
       return true;
     }
   }
@@ -114,7 +117,10 @@ let containsItem = (item, arr) => {
   return false;
 }
 
-//returns events object as key/object pairs
+/**
+ * returns events object as key/object pairs
+ * @obj {Object}
+ */
 let returnEvents = obj => {
   let events = {};
   for (let ev in obj) {
@@ -124,7 +130,10 @@ let returnEvents = obj => {
   return events;
 }
 
-//iterates over API response and returns formatted object
+/**
+ * iterates over API response and returns formatted object
+ * @data {Object}
+ */
 let formatResponse = data => {
   let values = [],
       result = {};

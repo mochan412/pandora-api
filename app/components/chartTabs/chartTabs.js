@@ -60,6 +60,10 @@ class ChartTabs extends Component {
     )
   }
 
+  /**
+   * change active class
+   * @id {Number} active tab id
+   */
   changeActiveClass(id) {
     this.setState({
       activeTab: id

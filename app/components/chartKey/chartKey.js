@@ -39,6 +39,10 @@ class ChartKey extends Component {
     )
   }
 
+  /**
+   * get tab labels from metrics api
+   * @code {Number} metric id
+   */
   fetchNew(code) {
     let url = appConstants.apiURL + "/metrics/" + code + "?&accessToken=" + appConstants.accessToken;
 

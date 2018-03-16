@@ -44,6 +44,10 @@ class ArtistInput extends Component {
     );
   }
 
+  /**
+   * get list of artists to pass to AC
+   * @val {Number} artist id
+   */
   searchArtist(val) {
     let artistName = val.split(' ').join('+');
     let url = appConstants.apiURL + "/search/v1/artists/?query=" + artistName + "&limit=10";
@@ -58,6 +62,10 @@ class ArtistInput extends Component {
     })
   }
 
+  /**
+   * change event
+   * @e {Object} mouse event
+   */
   inputChange(e) {
     this.setState({
       value: e.target.value
@@ -68,6 +76,11 @@ class ArtistInput extends Component {
     } catch(err) {}
   }
 
+  /**
+   * submit event
+   * @id {Number} artist ID
+   * @name {String} artist name
+   */
   submitEvent(id, name) {
     this.setState({
       value: name
