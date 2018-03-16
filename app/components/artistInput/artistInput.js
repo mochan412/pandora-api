@@ -85,7 +85,7 @@ class ArtistInput extends Component {
     this.setState({
       value: name
     })
-    this.props.submitArtist(id);
+    this.props.submitArtist(id, name);
   }
 }
 

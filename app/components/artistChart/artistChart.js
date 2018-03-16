@@ -6,6 +6,7 @@ import * as d3 from 'd3';
 
 import ChartKey from '../chartKey/chartKey.js';
 import ChartTabs from '../chartTabs/chartTabs.js';
+import Loader from '../loader/loader.js';
 
 
 class ArtistChart extends Component {
@@ -13,10 +14,10 @@ class ArtistChart extends Component {
     super(props);
 
     this.state = {
-      loading: true,
       showIndex: false,
       chartKeys: null,
-      activeTab: 1
+      activeTab: 1,
+      loading: true
     }
 
     this.createIndex = this.createIndex.bind(this);
@@ -24,19 +25,32 @@ class ArtistChart extends Component {
     this.initLoad = this.initLoad.bind(this);
   }
 
+  componentDidMount() {
+    this.setState({
+      loading: this.props.loading,
+    })
+  }
+
   componentWillReceiveProps(nextProps) {
     if (this.props.data !== nextProps.data) {
-      this.state = {
+      this.setState({
+        loading: nextProps.loading,
         showIndex: false,
         chartKeys: null
-      }
+      })
       this.createChart(nextProps.data);
     }
 
-    if (this.props.activeArtist !== nextProps.activeArtist) {
-      this.state = {
+    if (this.props.artistId !== nextProps.artistId) {
+      this.setState({
         activeTab: 1
-      }
+      })
+    }
+
+    if (this.props.loading !== nextProps.loading) {
+      this.setState({
+        loading: nextProps.loading
+      })
     }
   }
 
@@ -48,14 +62,21 @@ class ArtistChart extends Component {
       )
     }
 
+    let loader = null;
+    if (this.state.loading) {
+      loader = <Loader />
+    }
+
     return (
       <div className={styles.chartContainer}>
+        {loader}
         {this.state.chartKeys}
         {chartTabs}
         <svg ref={node => this.node = node} width={this.props.size[0]} height={this.props.size[1]}>
         </svg>
       </div>
     )
+
   }
 
   /**
@@ -194,7 +215,6 @@ class ArtistChart extends Component {
     const svg = d3.select(this.node);
     svg.selectAll("*").remove();
 
-    //TODO: add loading state
     this.setState({
       loading: true
     })

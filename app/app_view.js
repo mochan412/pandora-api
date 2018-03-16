@@ -12,7 +12,9 @@ export default class App extends React.Component {
 
     this.state = {
       data: null,
-      activeArtist: ''
+      artistId: '',
+      artistName: '',
+      loading: false
     }
 
     this.changeMetrics = this.changeMetrics.bind(this);
@@ -25,10 +27,11 @@ export default class App extends React.Component {
         <h1>Compare Metrics</h1>
         <ArtistInput submitArtist={this.submitArtist}/>
         <ArtistChart
-          activeArtist={this.state.activeArtist}
+          artistId={this.state.artistId}
           data={this.state.data}
           changeMetrics={this.changeMetrics}
-          size={[900,500]}/>
+          size={[900,500]}
+          loading={this.state.loading} />
       </div>
     );
   }
@@ -39,7 +42,7 @@ export default class App extends React.Component {
  */
  changeMetrics(metrics) {
    let metricsString = metrics.join(',')
-   let url = appConstants.apiURL + "/artists/" + this.state.activeArtist + "/data?metricIds="+metricsString+"&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
+   let url = appConstants.apiURL + "/artists/" + this.state.artistId + "/data?metricIds="+metricsString+"&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
    fetch(url).then(results => {
      return results.json();
    })
@@ -54,15 +57,20 @@ export default class App extends React.Component {
   * API request for different artists
   * @val {Number} artist ID
   */
-  submitArtist(val) {
-    let url = appConstants.apiURL + "/artists/" + val + "/data?metricIds=11,31,40,254&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
+  submitArtist(id, name) {
+    let url = appConstants.apiURL + "/artists/" + id + "/data?metricIds=11,31,40,254&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
+    this.setState({
+      artistId: id,
+      artistName: name,
+      loading: true
+    })
 
     fetch(url).then(results => {
       return results.json();
     })
     .then(data => {
       this.setState({
-        activeArtist: val,
+        loading: false,
         data: data
       })
     })
