@@ -27,7 +27,6 @@ class ArtistChart extends Component {
         showIndex: false,
         chartKeys: null
       }
-      console.log('yo this happen? ')
       this.createChart(nextProps.data);
     }
   }
@@ -36,7 +35,7 @@ class ArtistChart extends Component {
     let chartTabs = null;
     if (this.state.showIndex) {
       chartTabs = (
-        <ChartTabs changeMetrics={this.props.changeMetrics}/>
+        <ChartTabs changeMetrics={this.props.changeMetrics} initLoad={this.initLoad}/>
       )
     }
 
@@ -171,6 +170,12 @@ class ArtistChart extends Component {
     })
 
     this.createIndex(index);
+  }
+
+  initLoad() {
+    console.log('should happen immediately')
+    const svg = d3.select(this.node);
+    svg.selectAll("*").remove();
   }
 }
 

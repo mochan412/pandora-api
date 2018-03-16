@@ -22,7 +22,7 @@ export default class App extends React.Component {
   render() {
     return (
       <div className={styles.app}>
-        <h1>Compare Social Media Activity</h1>
+        <h1>Compare Metrics</h1>
         <ArtistInput submitArtist={this.submitArtist}/>
         <ArtistChart
           activeArtist={this.state.activeArtist}
@@ -34,7 +34,6 @@ export default class App extends React.Component {
   }
 
  changeMetrics(metrics) {
-   console.log(metrics)
    let metricsString = metrics.join(',')
    let url = appConstants.apiURL + "/artists/" + this.state.activeArtist + "/data?metricIds="+metricsString+"&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
    fetch(url).then(results => {

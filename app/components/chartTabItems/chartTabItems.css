@@ -3,8 +3,14 @@
   margin-right:10px;
   padding:4px 10px;
   border:1px solid #ccc;
+  border-radius: 6px;
+  background-color:#ccc;
 }
 
 .tab:hover {
   cursor: pointer;
+}
+
+.active {
+  background-color:#fff;
 }
