@@ -14,15 +14,23 @@ class ChartTabs extends Component {
           {values: [42,44,74,41,411,415], title: "plays/views", id: 2},
           {values: [28,37,256,405], title: "followers", id: 3}
         ],
-      activeItem: 1
+      activeTab: 1
     }
 
     this.changeActiveClass = this.changeActiveClass.bind(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.activeTab !== nextProps.activeTab) {
+      this.setState({
+        activeTab: nextProps.activeTab
+      })
+    }
+  }
+
   render() {
     let items = this.state.tabItems.map((item, i) => {
-      if (this.state.activeItem == item.id) {
+      if (this.state.activeTab == item.id) {
         return <ChartTabItems
           id={item.id}
           values={item.values}
@@ -54,7 +62,7 @@ class ChartTabs extends Component {
 
   changeActiveClass(id) {
     this.setState({
-      activeItem: id
+      activeTab: id
     })
   }
 }

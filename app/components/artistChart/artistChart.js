@@ -15,7 +15,8 @@ class ArtistChart extends Component {
     this.state = {
       loading: true,
       showIndex: false,
-      chartKeys: null
+      chartKeys: null,
+      activeTab: 1
     }
 
     this.createIndex = this.createIndex.bind(this);
@@ -31,13 +32,19 @@ class ArtistChart extends Component {
       }
       this.createChart(nextProps.data);
     }
+
+    if (this.props.activeArtist !== nextProps.activeArtist) {
+      this.state = {
+        activeTab: 1
+      }
+    }
   }
 
   render() {
     let chartTabs = null;
     if (this.state.showIndex) {
       chartTabs = (
-        <ChartTabs changeMetrics={this.props.changeMetrics} initLoad={this.initLoad}/>
+        <ChartTabs changeMetrics={this.props.changeMetrics} initLoad={this.initLoad} activeTab={this.state.activeTab}/>
       )
     }
 
