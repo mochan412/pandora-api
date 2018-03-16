@@ -1,0 +1,7 @@
+.chartTabs {
+  display: flex;
+  align-items: center;
+  font-size:12px;
+  line-height:24px;
+  list-style-type: none;
+}

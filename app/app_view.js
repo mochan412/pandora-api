@@ -15,31 +15,49 @@ export default class App extends React.Component {
       activeArtist: ''
     }
 
+    this.changeMetrics = this.changeMetrics.bind(this);
     this.submitArtist = this.submitArtist.bind(this);
   }
 
   render() {
     return (
       <div className={styles.app}>
-        <h1>Compare Twitter Activity</h1>
+        <h1>Compare Social Media Activity</h1>
         <ArtistInput submitArtist={this.submitArtist}/>
-
-        <ArtistChart activeArtist={this.state.activeArtist} data={this.state.data} size={[900,500]}/>
+        <ArtistChart
+          activeArtist={this.state.activeArtist}
+          data={this.state.data}
+          changeMetrics={this.changeMetrics}
+          size={[900,500]}/>
       </div>
     );
   }
 
+ changeMetrics(metrics) {
+   console.log(metrics)
+   let metricsString = metrics.join(',')
+   let url = appConstants.apiURL + "/artists/" + this.state.activeArtist + "/data?metricIds="+metricsString+"&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
+   fetch(url).then(results => {
+     return results.json();
+   })
+   .then(data => {
+     this.setState({
+       data: data
+     })
+   })
+ }
+
   submitArtist(val) {
-    let url = appConstants.apiURL + "/artists/" + val + "/data?metricIds=253,254,255&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
+    let url = appConstants.apiURL + "/artists/" + val + "/data?metricIds=11,31,40,254&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
 
     fetch(url).then(results => {
       return results.json();
     })
     .then(data => {
       this.setState({
+        activeArtist: val,
         data: data
       })
     })
-
   }
 }

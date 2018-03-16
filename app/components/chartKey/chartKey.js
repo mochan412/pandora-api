@@ -7,22 +7,21 @@ class ChartKey extends Component {
     super(props);
 
     this.state = {
-      name: null
+      name: null,
+      code: null
     }
+
+    this.fetchNew = this.fetchNew.bind(this);
   }
 
   componentWillMount() {
+    this.fetchNew(this.props.code);
+  }
 
-    let url = appConstants.apiURL + "/metrics/" + this.props.code + "?&accessToken=" + appConstants.accessToken;
-
-    fetch(url).then(results => {
-      return results.json();
-    })
-    .then(data => {
-      this.setState({
-        name: data.fullName
-      })
-    })
+  componentWillReceiveProps(nextProps) {
+    if (this.props !== nextProps) {
+      this.fetchNew(nextProps.code);
+    }
   }
 
   render() {
@@ -38,6 +37,19 @@ class ChartKey extends Component {
         <span style={circleStyle} /> {this.state.name}
       </li>
     )
+  }
+
+  fetchNew(code) {
+    let url = appConstants.apiURL + "/metrics/" + code + "?&accessToken=" + appConstants.accessToken;
+
+    fetch(url).then(results => {
+      return results.json();
+    })
+    .then(data => {
+      this.setState({
+        name: data.fullName
+      })
+    })
   }
 }
 

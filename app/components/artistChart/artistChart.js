@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import styles from './artistChart.css';
 import PropTypes from 'prop-types';
-import ChartKey from '../chartKey/chartKey.js';
 import * as appConstants from '../../constants.js';
 import * as d3 from 'd3';
+
+import ChartKey from '../chartKey/chartKey.js';
+import ChartTabs from '../chartTabs/chartTabs.js';
+
 
 class ArtistChart extends Component {
   constructor(props) {
@@ -11,7 +14,7 @@ class ArtistChart extends Component {
 
     this.state = {
       showIndex: false,
-      chartKeys: []
+      chartKeys: null
     }
 
     this.createIndex = this.createIndex.bind(this);
@@ -20,43 +23,46 @@ class ArtistChart extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.data !== nextProps.data) {
+      this.state = {
+        showIndex: false,
+        chartKeys: null
+      }
+      console.log('yo this happen? ')
       this.createChart(nextProps.data);
     }
   }
 
   render() {
-    let chartKey, keyItems = null;
+    let chartTabs = null;
     if (this.state.showIndex) {
-      keyItems = this.state.chartKeys.map((item, i)=>{
-          return <ChartKey hex={item.hex} key={i} code={item.id} />
-      })
-
-      chartKey = (
-        <ul className={styles.keyBox}>
-          {keyItems}
-        </ul>
+      chartTabs = (
+        <ChartTabs changeMetrics={this.props.changeMetrics}/>
       )
     }
 
     return (
       <div className={styles.chartContainer}>
-        {chartKey}
+        {this.state.chartKeys}
+        {chartTabs}
         <svg ref={node => this.node = node} width={this.props.size[0]} height={this.props.size[1]}>
         </svg>
       </div>
     )
   }
 
-  createIndex(id, hex) {
-    let newObj = {}
-    newObj.showIndex = true;
+  createIndex(arr) {
+    let keyItems = arr.map((item, i)=>{
+        return <ChartKey hex={item.hex} key={i} code={item.id} />
+    })
 
-    let newArray = this.state.chartKeys;
-    newArray.push({"id": id, "hex": hex});
-
+    let key = (
+      <ul className={styles.keyBox}>
+        {keyItems}
+      </ul>
+    )
     this.setState({
       showIndex: true,
-      chartKeys: newArray
+      chartKeys: key
     })
   }
 
@@ -68,8 +74,6 @@ class ArtistChart extends Component {
     const padding = 40;
 
     svg.selectAll("*").remove();
-
-    let parseTime = d3.timeParse("%y-%d-%m");
 
     let returnDeltas = (deltas) => {
       let deltasArray = [];
@@ -162,9 +166,11 @@ class ArtistChart extends Component {
         .style("stroke", function(d) { return color(d.metricId); })
         .style("fill", "none");
 
-    data2.map(item => {
-      this.createIndex(item.metricId, color(item.metricId))
+    let index = data2.map(item => {
+      return {id: item.metricId, hex: color(item.metricId)}
     })
+
+    this.createIndex(index);
   }
 }
 
