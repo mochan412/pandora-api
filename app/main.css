@@ -1,4 +1,7 @@
 .app {
   padding:20px;
   font-family:'Source Sans Pro', Arial, sans-serif;
+  box-sizing: border-box;
+  width:900px;
+  position: relative;
 }

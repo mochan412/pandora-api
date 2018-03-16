@@ -11,7 +11,8 @@ export default class App extends React.Component {
     super(props);
 
     this.state = {
-      data: null
+      data: null,
+      activeArtist: ''
     }
 
     this.submitArtist = this.submitArtist.bind(this);
@@ -20,26 +21,25 @@ export default class App extends React.Component {
   render() {
     return (
       <div className={styles.app}>
+        <h1>Compare Twitter Activity</h1>
         <ArtistInput submitArtist={this.submitArtist}/>
 
-        <ArtistChart  data={this.state.data} size={[900,500]}/>
+        <ArtistChart activeArtist={this.state.activeArtist} data={this.state.data} size={[900,500]}/>
       </div>
     );
   }
 
   submitArtist(val) {
-    // let url = "/events/" + val + "/stats?startDate=2017-01-01&endDate=2017-12-31&accessToken=" + appConstants.accessToken;
-    let url = appConstants.apiURL + "/artists/" + val + "/data?metricIds=28,29,247,415,414,11&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
+    let url = appConstants.apiURL + "/artists/" + val + "/data?metricIds=253,254,255&startDate="+appConstants.startDate+"&endDate="+appConstants.endDate+"&timeseries=totals,deltas&accessToken=" + appConstants.accessToken;
 
     fetch(url).then(results => {
       return results.json();
     })
     .then(data => {
-
       this.setState({
         data: data
       })
-
     })
+
   }
 }
