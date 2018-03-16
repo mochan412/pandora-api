@@ -13,12 +13,14 @@ class ArtistChart extends Component {
     super(props);
 
     this.state = {
+      loading: true,
       showIndex: false,
       chartKeys: null
     }
 
     this.createIndex = this.createIndex.bind(this);
     this.createChart = this.createChart.bind(this);
+    this.initLoad = this.initLoad.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -173,9 +175,12 @@ class ArtistChart extends Component {
   }
 
   initLoad() {
-    console.log('should happen immediately')
     const svg = d3.select(this.node);
     svg.selectAll("*").remove();
+
+    this.setState({
+      loading: true
+    })
   }
 }
 

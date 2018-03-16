@@ -30,7 +30,8 @@ class ChartTabs extends Component {
           key={i}
           changeMetrics={this.props.changeMetrics}
           changeActiveClass={this.changeActiveClass}
-          active={true} />
+          active={true}
+          initLoad={this.props.initLoad} />
       } else {
         return <ChartTabItems
           id={item.id}
@@ -39,7 +40,8 @@ class ChartTabs extends Component {
           key={i}
           changeMetrics={this.props.changeMetrics}
           changeActiveClass={this.changeActiveClass}
-          active={false} />
+          active={false}
+          initLoad={this.props.initLoad} />
       }
     })
 
@@ -51,7 +53,6 @@ class ChartTabs extends Component {
   }
 
   changeActiveClass(id) {
-    console.log(id)
     this.setState({
       activeItem: id
     })

@@ -34,6 +34,7 @@ class ChartTabItems extends Component {
   }
 
   clickHandler() {
+    this.props.initLoad();
     this.props.changeActiveClass(this.props.id);
     this.props.changeMetrics(this.props.values)
   }
